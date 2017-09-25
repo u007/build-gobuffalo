@@ -14,7 +14,14 @@ RUN apt-get install -y vim
 
 ENV BP=$GOPATH/src/github.com/gobuffalo/buffalo
 
-RUN go get -u github.com/gobuffalo/buffalo/...
+RUN mkdir -p $GOPATH/src/github.com/gobuffalo
+RUN cd $GOPATH/src/github.com/gobuffalo && git clone https://github.com/gobuffalo/buffalo
+RUN cd $GOPATH/src/github.com/gobuffalo/buffalo && git checkout tags/v0.9.4
+#RUN go get -u github.com/gobuffalo/buffalo/...
+RUN mkdir -p $GOPATH/src/github.com/markbates
+RUN cd $GOPATH/src/github.com/markbates && git clone https://github.com/u007/pop
+RUN cd $GOPATH/src/github.com/gobuffalo/buffalo/buffalo && go get ./... && go install
+RUN cd $GOPATH/src/github.com/markbates/pop/soda && go get ./... && go install
 # RUN go get -v -t ./...
 
 # cache yarn packages to an offline mirror so they're faster to load. hopefully.
@@ -29,6 +36,3 @@ RUN buffalo version
 WORKDIR $GOPATH/src
 
 ENTRYPOINT ["/docker-entrypoint.sh"]
-
-
-# example: docker run --rm build-gobuffalo -v "$PWD":"/go/src/aqtrain" aqtrain -o bin/heroku
